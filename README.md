@@ -126,6 +126,4 @@ rm -f lex.yy.c *.tab.c *.tab.h wc_flex traductor tokens4 calc_hex calc_com wc_c_
 
 **Institución:** Universidad Sergio Arboleda
 
-**Materia:** Compiladores
-
 **Fecha:** Febrero 2026
