@@ -20,7 +20,7 @@ sudo apt update && sudo apt install flex bison build-essential
 Si ha descargado el proyecto en su carpeta de descargas, utilice los siguientes comandos para posicionarse en el directorio correcto y verificar la existencia de los archivos:
 
 ```bash
-cd ~/Downloads/flex_bison-juanlozano
+cd ~/Downloads/flex_bison-juanlozano-main
 pwd
 ls -l
 
