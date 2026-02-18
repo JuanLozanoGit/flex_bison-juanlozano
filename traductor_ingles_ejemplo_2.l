@@ -1,7 +1,9 @@
-/* fb1-2.l: Inglés -> Americano */
 %%
-"colour"  { printf("color"); }
+"colour" { printf("color"); }
 "flavour" { printf("flavor"); }
-"clever"  { printf("smart"); }
-.         { printf("%s", yytext); }
+"clever" { printf("smart"); }
+"smart" { printf("elegant"); }
+"conservative" { printf("liberal"); }
+. { printf("%s", yytext); }
 %%
+int main() { yylex(); return 0; }
