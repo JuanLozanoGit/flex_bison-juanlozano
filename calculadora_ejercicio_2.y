@@ -23,7 +23,8 @@ factor: term
  ;
 
 term: NUMBER
- | ABS term { $$ = $2 >= 0 ? $2 : -$2; }
+ | ABS exp ABS { $$ = $2 >= 0 ? $2 : -$2; }  /* Ahora acepta | exp | */
+ | '(' exp ')' { $$ = $2; }                  /* Opcional: añade paréntesis */
  ;
 %%
 
