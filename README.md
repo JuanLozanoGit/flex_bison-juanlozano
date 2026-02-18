@@ -23,11 +23,12 @@ ls -l
 
 ## 2. Guía de Compilación y Ejecución
 
-### A. Análisis Léxico (Archivos `.l`)
+### A. Análisis Léxico (Archivos `.l` puros)
 
-Estos archivos generan analizadores que identifican patrones mediante expresiones regulares.
+Estos archivos generan analizadores que funcionan de forma independiente (tienen su propio `main`).
 
 * **Contador de Palabras (Ejemplo 1):**
+
 ```bash
 flex contador_de_palabras_ejemplo1.l
 gcc lex.yy.c -o wc_flex -lfl
@@ -35,8 +36,8 @@ gcc lex.yy.c -o wc_flex -lfl
 
 ```
 
-
 * **Traductor de Variantes de Inglés (Ejemplo 2):**
+
 ```bash
 flex traductor_ingles_ejemplo_2.l
 gcc lex.yy.c -o traductor -lfl
@@ -44,69 +45,51 @@ gcc lex.yy.c -o traductor -lfl
 
 ```
 
-
-* **Reconocedor de Tokens (Ejemplo 3):**
-```bash
-flex reconocedor_tokens-ejemplo3.l
-gcc lex.yy.c -o tokens3 -lfl
-./tokens3
-
-```
-
-
+---
 
 ### B. Análisis Sintáctico (Integración `.y` + `.l`)
 
-Bison requiere que el comando `bison -d` se ejecute primero para generar el archivo de cabecera `.h` que necesita Flex.
+Para estos ejercicios, el archivo `.y` contiene la lógica principal y el `main`. Se recomienda usar el escáner reparado `calculadora_completa_ejemplo_5.l`.
 
-* **Calculadora con Manejo de Comentarios (Ejercicio 1):**
+* **Ejercicio 1: Calculadora con Soporte de Comentarios**
+
 ```bash
 bison -d comentario_ejercicio_1.y
-flex escaner_tokens_ejemplo_4.l
+flex calculadora_completa_ejemplo_5.l
 gcc comentario_ejercicio_1.tab.c lex.yy.c -o calc_com -lfl
-./calc_com
+./calc_com < prueba_calc.txt
 
 ```
 
+* **Ejercicio 2: Calculadora Hexadecimal**
 
-* **Calculadora Hexadecimal (Ejercicio 2):**
 ```bash
 bison -d calculadora_ejercicio_2.y
-flex escaner_tokens_ejemplo_4.l
+flex calculadora_completa_ejemplo_5.l
 gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_hex -lfl
 ./calc_hex < prueba_calc.txt
 
 ```
 
+* **Ejercicio 3: Resolución de Ambigüedad (`|`)**
 
-* **Análisis de Ambigüedad (Ejercicio 3):**
 ```bash
 bison -d ambiguedad_ejercicio_3.y
-flex escaner_tokens_ejemplo_4.l
+flex calculadora_completa_ejemplo_5.l
 gcc ambiguedad_ejercicio_3.tab.c lex.yy.c -o calc_ambig -lfl
 ./calc_ambig
 
 ```
 
+* **Ejercicio 6: Comparativa C Puro (Manual)**
 
-* **Calculadora Completa (Ejemplo 5):**
+> **Nota:** El archivo original tenía extensión `.y` erróneamente. Debe compilarse como C estándar.
+
 ```bash
-bison -d calculadora_ejercicio_2.y
-flex calculadora_completa_ejemplo_5.l
-gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_completa -lfl
-./calc_completa
-
-```
-
-
-* **Comparativa C Puro (Ejercicio 6):**
-```bash
-gcc comparativa_c_ejercicio_6.y -o wc_c_puro 
+gcc comparativa_c_ejercicio_6.c -o wc_c_puro 
 ./wc_c_puro < prueba_wc.txt
 
 ```
-
-
 
 ---
 
@@ -114,28 +97,35 @@ gcc comparativa_c_ejercicio_6.y -o wc_c_puro
 
 ### Ejercicio 1: Soporte de Comentarios
 
-Se modificó la gramática en `comentario_ejercicio_1.y` para permitir que la regla `calclist` acepte un `EOL` solitario. Esto evita errores cuando el escáner ignora un comentario pero deja un salto de línea huérfano.
+Se modificó la gramática en `comentario_ejercicio_1.y` para que la regla `calclist` acepte un `EOL` solitario. El escáner (`.l`) ignora el texto después del símbolo `#`, enviando solo el salto de línea al parser, evitando errores de sintaxis en líneas vacías.
 
 ### Ejercicio 2: Conversión Hexadecimal
 
-Se implementó el patrón `"0x"[a-fA-F0-9]+` en el escáner. La conversión se realiza con `strtol(yytext, NULL, 16)`, permitiendo operar decimales y hexadecimales simultáneamente.
+Se implementó en el escáner el patrón `0x[a-fA-F0-9]+`. La conversión se realiza mediante `strtol(yytext, NULL, 16)`. El parser en `calculadora_ejercicio_2.y` imprime el resultado usando el formato `%d` y `%X` para mostrar decimal y hexadecimal simultáneamente.
 
 ### Ejercicio 3: Ambigüedad del Operador "|"
 
-El uso de `|` como valor absoluto y operador OR genera un conflicto **Shift/Reduce**. Se resuelve definiendo la precedencia en Bison o reestructurando la gramática para distinguir entre operadores unarios y binarios.
+Al usar `|` tanto para valor absoluto (unario) como para una posible operación OR (binario), Bison detecta un conflicto **Shift/Reduce**. Se resolvió mediante la declaración de precedencia:
+
+```yacc
+%left ADD SUB
+%left MUL DIV
+%nonassoc ABS
+
+```
+
+Esto permite que el parser sepa que el valor absoluto tiene mayor prioridad que las operaciones aritméticas básicas.
 
 ### Ejercicio 6: Escáner Manual vs Flex
 
-Aunque `comparativa_c_ejercicio_6.y` tiene extensión `.y`, contiene código C puro. Se utiliza para demostrar que, si bien un programa escrito a mano puede ser marginalmente más rápido, la mantenibilidad de Flex (basada en DFAs) es superior para lenguajes complejos.
+Se rescribió el contador de palabras en C puro. Al comparar `wc_c_puro` contra `wc_flex`, se observa que el código manual es ligeramente más rápido en archivos grandes debido a la ausencia del overhead de la máquina de estados de Flex, aunque es mucho más difícil de mantener y escalar.
 
 ---
 
 ## 4. Limpieza de Archivos
 
-Elimine todos los archivos temporales y binarios generados:
-
 ```bash
-rm -f lex.yy.c *.tab.c *.tab.h wc_flex traductor tokens3 calc_hex calc_com calc_ambig calc_completa wc_c_puro
+rm -f lex.yy.c *.tab.c *.tab.h wc_flex traductor tokens3 calc_hex calc_com calc_ambig wc_c_puro
 
 ```
 
