@@ -45,54 +45,6 @@ gcc lex.yy.c -o traductor -lfl
 
 ```
 
----
-
-### B. Análisis Sintáctico (Integración `.y` + `.l`)
-
-Para estos ejercicios, el archivo `.y` contiene la lógica principal y el `main`. Se recomienda usar el escáner reparado `calculadora_completa_ejemplo_5.l`.
-
-* **Ejercicio 1: Calculadora con Soporte de Comentarios**
-
-```bash
-bison -d comentario_ejercicio_1.y
-flex calculadora_completa_ejemplo_5.l
-gcc comentario_ejercicio_1.tab.c lex.yy.c -o calc_com -lfl
-./calc_com < prueba_calc.txt
-
-```
-
-* **Ejercicio 2: Calculadora Hexadecimal**
-
-```bash
-bison -d calculadora_ejercicio_2.y
-flex calculadora_completa_ejemplo_5.l
-gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_hex -lfl
-./calc_hex < prueba_calc.txt
-
-```
-
-* **Ejercicio 3: Resolución de Ambigüedad (`|`)**
-
-```bash
-bison -d ambiguedad_ejercicio_3.y
-flex calculadora_completa_ejemplo_5.l
-gcc ambiguedad_ejercicio_3.tab.c lex.yy.c -o calc_ambig -lfl
-./calc_ambig
-
-```
-
-* **Ejercicio 6: Comparativa C Puro (Manual)**
-
-> **Nota:** El archivo original tenía extensión `.y` erróneamente. Debe compilarse como C estándar.
-
-```bash
-gcc comparativa_c_ejercicio_6.c -o wc_c_puro 
-./wc_c_puro < prueba_wc.txt
-
-```
-
----
-
 ## 3. Resolución Detallada de Ejercicios
 
 ### Ejercicio 1: Soporte de Comentarios
