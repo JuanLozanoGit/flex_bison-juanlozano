@@ -1,94 +1,131 @@
+# README: Flex & Bison (Capítulo 1)
 
-# Flex & Bison: Manual de Implementacion - Capitulo 1
+Este repositorio contiene el código fuente y la documentación técnica de los ejemplos y ejercicios del primer capítulo del libro "Flex & Bison" de John Levine. El objetivo principal es comprender la separación de responsabilidades en la construcción de un compilador: el análisis léxico (identificación de tokens) y el análisis sintáctico (validación de gramática).
 
-Este repositorio contiene la documentacion y el codigo fuente para los ejemplos y ejercicios del Capitulo 1 del libro "Flex & Bison" de John Levine. El objetivo de esta tarea es comprender la arquitectura de un compilador, separando el analisis lexico (tokens) del analisis sintactico (gramatica).
+## 1. Configuración del Entorno de Desarrollo
 
----
+Para compilar y ejecutar los archivos en un entorno Linux, es indispensable contar con el generador de escáneres **Flex**, el generador de parsers **Bison** y el compilador **GCC**.
 
-## 1. Configuracion del Entorno de Desarrollo
+### Instalación de herramientas
 
-Para poder compilar y ejecutar estos archivos en un entorno Linux, es indispensable contar con el generador de escaneres Flex, el generador de parsers Bison y el compilador GCC.
+Ejecute el siguiente comando para asegurar que dispone de todas las dependencias:
 
-**Instalacion de herramientas:**
 ```bash
 sudo apt update && sudo apt install flex bison build-essential
 
-Acceso a la carpeta del proyecto:
-Asumiendo que el repositorio fue descargado en la carpeta de Descargas y la carpeta se llama flex_bison-juanlozano:
-cd ~/Downloads/flex_bison-juanlozano
+```
 
-2. Guia de Compilacion y Pruebas
-A. Analisis Lexico (Archivos .l)
-Estos programas procesan texto caracter por caracter para identificar patrones mediante expresiones regulares.
- * Contador de Palabras (Ejemplo 1-1):
-   Identifica lineas, palabras y caracteres.
-   flex contador_de_palabras_ejemplo1.l
+### Acceso y Localización de Archivos
+
+Si ha descargado el proyecto en su carpeta de descargas, utilice los siguientes comandos para posicionarse en el directorio correcto y verificar la existencia de los archivos:
+
+```bash
+cd ~/Downloads/flex_bison-juanlozano
+pwd
+ls -l
+
+```
+
+---
+
+## 2. Guía de Compilación y Ejecución
+
+La arquitectura de estas herramientas requiere procesar primero los archivos de definición para generar código fuente en C que luego será compilado.
+
+### A. Análisis Léxico (Archivos `.l`)
+
+Estos archivos definen patrones mediante expresiones regulares que Flex convierte en un analizador de caracteres.
+
+* **Contador de Palabras (Ejemplo 1-1):**
+```bash
+flex contador_de_palabras_ejemplo1.l
 gcc lex.yy.c -o wc_flex -lfl
 ./wc_flex < prueba_wc.txt
 
- * Traductor de Variantes de Ingles (Ejemplo 1-2):
-   Realiza sustituciones lexicas directas (UK a US).
-   flex traductor_ingles_ejemplo_2.l
+```
+
+
+* **Traductor de Variantes de Inglés (Ejemplo 1-2):**
+```bash
+flex traductor_ingles_ejemplo_2.l
 gcc lex.yy.c -o traductor -lfl
 ./traductor < prueba_traductor.txt
 
- * Escaneo de Tokens de Calculadora (Ejemplos 1-3 y 1-4):
-   Clasifica numeros y operadores asignandoles un valor numerico interno.
-   # Compilacion del ejemplo 1-4
-flex escaner_tokens_ejemplo_4.l
-gcc lex.yy.c -o tokens4 -lfl
-./tokens4 < prueba_calc.txt
+```
 
-B. Analisis Sintactico (Archivos .y + .l)
-En estos ejercicios, Bison define las reglas gramaticales y utiliza a Flex como su proveedor de tokens para realizar calculos.
- * Calculadora con Manejo de Comentarios (Ejercicio 1):
-   Permite que el usuario ingrese lineas vacias o comentarios iniciando con #.
-   bison -d comentario_ejercicio_1.y
+
+
+### B. Análisis Sintáctico (Integración `.y` + `.l`)
+
+Bison define la gramática y utiliza a Flex como proveedor de tokens. Para estos casos, se deben abrir y procesar ambos archivos para generar un único ejecutable.
+
+* **Calculadora con Manejo de Comentarios (Ejercicio 1):**
+```bash
+bison -d comentario_ejercicio_1.y
 flex escaner_tokens_ejemplo_4.l
 gcc comentario_ejercicio_1.tab.c lex.yy.c -o calc_com -lfl
-./calc_com < prueba_calc.txt
 
- * Calculadora Hexadecimal (Ejercicio 2):
-   Soporta entradas mixtas como 15 + 1 o 0xF + 1.
-   bison -d calculadora_ejercicio_2.y
+```
+
+
+* **Calculadora Hexadecimal (Ejercicio 2):**
+```bash
+bison -d calculadora_ejercicio_2.y
 flex escaner_tokens_ejemplo_4.l
 gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_hex -lfl
-./calc_hex < prueba_calc.txt
 
- * Contador de Palabras Manual en C (Ejercicio 6):
-   Implementacion sin herramientas generadoras para comparativa de rendimiento.
-   gcc comparativa_c_ejercicio_6.y -o wc_c_puro
-./wc_c_puro < prueba_wc.txt
+```
 
-3. Resolucion Detallada de Ejercicios
-Ejercicio 1: Soporte de Comentarios
- * Pregunta: ¿Aceptara la calculadora una linea que contenga solo un comentario?
- * Respuesta: Originalmente no. El escaner ignora el texto del comentario, pero el Parser espera una expresion valida antes del EOL. Al no recibir nada mas que el fin de linea, se genera un error de sintaxis.
- * Solucion: Se modifico la gramatica en comentario_ejercicio_1.y para que el simbolo calclist acepte un EOL solitario. Es mas eficiente corregirlo en el Parser ya que define la estructura legal de la gramatica.
-Ejercicio 2: Conversion Hexadecimal
-Se implemento el reconocimiento del patron 0x[a-fA-F0-9]+ en el archivo lexico. La conversion de la cadena de texto a valor numerico se realiza mediante la funcion de C strtol(yytext, NULL, 16). Esto permite que el sistema maneje enteros de 32 bits y realice operaciones aritmeticas transparentes entre bases.
-Ejercicio 3: Ambiguedad del Operador "|"
-El uso del simbolo | tanto para el operador binario OR como para el valor absoluto unario genera un conflicto de ambiguedad conocido como Shift/Reduce.
- * Conflicto: Ante la entrada 4 | 5, el parser no puede decidir si cerrar una operacion unaria previa o iniciar una binaria.
- * Solucion: Se requiere el uso de %left y %right en Bison para forzar la precedencia de operadores.
-Ejercicio 4: Escaner Manual vs Flex
-El escaner manual del Ejemplo 1-4 reconoce exactamente los mismos tokens que Flex. Sin embargo, Flex es superior tecnicamente porque genera un Automata Finito Determinista (DFA) optimizado, mientras que el escaner manual depende de una logica de switch-case que es mas lenta en archivos extensos.
-Ejercicio 5: Limitaciones de Flex
-Flex no es la herramienta ideal para lenguajes donde:
- * La indentacion tiene valor semantico (como Python).
- * Se requiere un analisis de contexto infinito para categorizar un token.
- * El lenguaje no es regular (no puede ser descrito por expresiones regulares simples).
-Ejercicio 6: Rendimiento C vs Flex
-La version en C puro (wc_c_puro) suele ser ligeramente mas veloz porque no tiene el overhead de las tablas de transicion de estados de Flex. No obstante, Flex es preferible en entornos de produccion debido a su facilidad para escalar y mantener la logica del lenguaje.
-4. Limpieza de Archivos
-Para eliminar los archivos intermedios y binarios generados:
+
+
+---
+
+## 3. Resolución Detallada de Ejercicios
+
+### Ejercicio 1: Soporte de Comentarios
+
+* **Problema:** Originalmente, la calculadora fallaba al encontrar una línea que solo contenía un comentario, pues el escáner ignora el texto pero el parser recibe un fin de línea (`EOL`) inesperado.
+* **Solución:** Se modificó la gramática en `comentario_ejercicio_1.y` para permitir que la regla `calclist` acepte un `EOL` solitario. Esto permite procesar líneas vacías o comentarios sin generar errores de sintaxis.
+
+### Ejercicio 2: Conversión Hexadecimal
+
+* **Implementación:** Se agregó el patrón `0x[a-fA-F0-9]+` en el escáner.
+* **Lógica:** La conversión de la cadena de texto a un valor entero se realiza mediante la función `strtol(yytext, NULL, 16)`. Esto permite que el parser realice operaciones aritméticas transparentes entre números decimales y hexadecimales.
+
+### Ejercicio 3: Ambigüedad del Operador "|"
+
+* **Diagnóstico:** El uso del símbolo `|` tanto para el valor absoluto (unario) como para el operador binario OR genera un conflicto de ambigüedad conocido como **Shift/Reduce**.
+* **Análisis:** Ante la entrada `4 | 5`, el parser no puede decidir si cerrar una operación previa o iniciar una binaria. Se requiere el uso de `%left` o `%right` en Bison para definir la precedencia.
+
+### Ejercicio 4 y 6: Escáner Manual vs Flex (Rendimiento)
+
+* **Comparativa:** El escáner manual del Ejemplo 1-4 reconoce los mismos tokens que Flex, pero Flex es superior técnicamente.
+* **Justificación:** Flex genera un Autómata Finito Determinista (DFA) optimizado mediante tablas de estados. El código en C puro (`comparativa_c_ejercicio_6.y`) puede ser ligeramente más veloz por carecer de infraestructura adicional, pero es mucho más difícil de escalar y mantener que una definición en Flex.
+
+### Ejercicio 5: Limitaciones de Flex
+
+Flex no es la herramienta adecuada para lenguajes donde:
+
+1. La indentación tiene valor semántico (como en Python).
+2. El lenguaje no es regular (requiere memoria de pila compleja para reconocer estructuras).
+
+---
+
+## 4. Limpieza de Archivos
+
+Para eliminar los archivos temporales generados por Flex y Bison (`lex.yy.c`, `*.tab.c`, `*.tab.h`) y los binarios ejecutables, utilice:
+
+```bash
 rm -f lex.yy.c *.tab.c *.tab.h wc_flex traductor tokens4 calc_hex calc_com wc_c_puro
 
-Autor
- * Nombre: Juan Lozano
- * Institucion: Universidad Sergio Arboleda
- * Fecha: Febrero 2026
-<!-- end list -->
+```
 
-¿Deseas que añada alguna otra explicación técnica sobre cómo funcionan los archivos `.tab.h` generados por Bison?
+---
 
+**Autor:** Juan Lozano
+
+**Institución:** Universidad Sergio Arboleda
+
+**Materia:** Compiladores
+
+**Fecha:** Febrero 2026
