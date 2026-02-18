@@ -7,8 +7,9 @@ int main() {
     while((c = getchar()) != EOF) {
         chars++;
         if(c == '\n') lines++;
-        if(c == ' ' || c == '\t' || c == '\n') inword = 0;
-        else if(!inword) {
+        if(c == ' ' || c == '\t' || c == '\n') {
+            inword = 0;
+        } else if(!inword) {
             inword = 1;
             words++;
         }
