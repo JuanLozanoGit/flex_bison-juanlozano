@@ -61,19 +61,14 @@ Bison define la gramática y utiliza a Flex como proveedor de tokens. Para estos
 
 * **Calculadora con Manejo de Comentarios (Ejercicio 1):**
 ```bash
-bison -d comentario_ejercicio_1.y
-flex escaner_tokens_ejemplo_4.l
-gcc comentario_ejercicio_1.tab.c lex.yy.c -o calc_com -lfl
-
-```
-
-
-* **Calculadora Hexadecimal (Ejercicio 2):**
-```bash
+# 1. Genera calculadora_ejercicio_2.tab.c y .h
 bison -d calculadora_ejercicio_2.y
-flex escaner_tokens_ejemplo_4.l
-gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_hex -lfl
 
+# 2. Genera lex.yy.c
+flex escaner_tokens_ejemplo_4.l
+
+# 3. Compila y enlaza
+gcc calculadora_ejercicio_2.tab.c lex.yy.c -o calc_hex -lfl
 ```
 
 
