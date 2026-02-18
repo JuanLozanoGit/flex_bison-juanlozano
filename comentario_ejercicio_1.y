@@ -7,10 +7,9 @@ int yylex();
 %token NUMBER ADD SUB MUL DIV ABS EOL
 
 %%
-
 calclist: /* nada */
  | calclist exp EOL { printf("= %d\n", $2); }
- | calclist EOL     { /* Acepta líneas vacías/comentarios */ }
+ | calclist EOL     { /* Acepta líneas vacías o comentarios */ }
  ;
 
 exp: factor
@@ -27,5 +26,6 @@ term: NUMBER
  | ABS term { $$ = $2 >= 0 ? $2 : -$2; }
  ;
 %%
+
 void yyerror(char *s) { fprintf(stderr, "error: %s\n", s); }
-int main() { yyparse(); return 0; }
+int main() { printf("> "); yyparse(); return 0; }
