@@ -1,3 +1,10 @@
+
+# Flex & Bison: Manual de Implementacion - Capitulo 1
+
+Este repositorio contiene la documentacion y el codigo fuente para los ejemplos y ejercicios del Capitulo 1 del libro "Flex & Bison" de John Levine. El objetivo de esta tarea es comprender la arquitectura de un compilador, separando el analisis lexico (tokens) del analisis sintactico (gramatica).
+
+---
+
 ## 1. Configuracion del Entorno de Desarrollo
 
 Para poder compilar y ejecutar estos archivos en un entorno Linux, es indispensable contar con el generador de escaneres Flex, el generador de parsers Bison y el compilador GCC.
@@ -81,3 +88,7 @@ Autor
  * Nombre: Juan Lozano
  * Institucion: Universidad Sergio Arboleda
  * Fecha: Febrero 2026
+<!-- end list -->
+
+¿Deseas que añada alguna otra explicación técnica sobre cómo funcionan los archivos `.tab.h` generados por Bison?
+
