@@ -1,6 +1,5 @@
 %{
 #include <stdio.h>
-#include <stdlib.h>
 void yyerror(char *s);
 int yylex();
 %}
@@ -9,7 +8,8 @@ int yylex();
 
 %%
 calclist: /* nada */
- | calclist exp EOL { printf("= %d\n", $2); }
+ | calclist exp EOL { printf("= %d (hex: 0x%X)\n> ", $2, $2); }
+ | calclist EOL     { printf("> "); }
  ;
 
 exp: factor
@@ -23,16 +23,9 @@ factor: term
  ;
 
 term: NUMBER
- | ABS exp ABS { $$ = $2 >= 0 ? $2 : -$2; }  /* Ahora acepta | exp | */
- | '(' exp ')' { $$ = $2; }                  /* Opcional: añade paréntesis */
+ | ABS term { $$ = $2 >= 0 ? $2 : -$2; }
  ;
 %%
 
-void yyerror(char *s) {
-  fprintf(stderr, "error: %s\n", s);
-}
-
-int main() {
-  yyparse();
-  return 0;
-}
+void yyerror(char *s) { fprintf(stderr, "error: %s\n", s); }
+int main() { printf("> "); yyparse(); return 0; }
