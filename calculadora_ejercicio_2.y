@@ -1,11 +1,37 @@
 %{
-#include "ejercicio2.tab.h"
+#include <stdio.h>
+#include <stdlib.h>
+void yyerror(char *s);
+int yylex();
 %}
 
+%token NUMBER ADD SUB MUL DIV ABS EOL
+
 %%
-"0x"[a-fA-F0-9]+ { yylval = strtol(yytext, NULL, 16); return NUMBER; }
-[0-9]+           { yylval = atoi(yytext); return NUMBER; }
-\n               { return EOL; }
-[ \t]            { /* ignorar */ }
-.                { return yytext[0]; }
+calclist: /* nada */
+ | calclist exp EOL { printf("= %d\n", $2); }
+ ;
+
+exp: factor
+ | exp ADD factor { $$ = $1 + $3; }
+ | exp SUB factor { $$ = $1 - $3; }
+ ;
+
+factor: term
+ | factor MUL term { $$ = $1 * $3; }
+ | factor DIV term { $$ = $1 / $3; }
+ ;
+
+term: NUMBER
+ | ABS term { $$ = $2 >= 0 ? $2 : -$2; }
+ ;
 %%
+
+void yyerror(char *s) {
+  fprintf(stderr, "error: %s\n", s);
+}
+
+int main() {
+  yyparse();
+  return 0;
+}
