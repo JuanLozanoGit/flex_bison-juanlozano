@@ -1,17 +1,18 @@
 #include <stdio.h>
-#include <ctype.h>
 
 int main() {
-    int c, nl = 0, nw = 0, nc = 0, state = 0;
-    while ((c = getchar()) != EOF) {
-        nc++;
-        if (c == '\n') nl++;
-        if (isspace(c)) state = 0;
-        else if (state == 0) {
-            state = 1;
-            nw++;
+    int chars = 0, words = 0, lines = 0;
+    int c, inword = 0;
+
+    while((c = getchar()) != EOF) {
+        chars++;
+        if(c == '\n') lines++;
+        if(c == ' ' || c == '\t' || c == '\n') inword = 0;
+        else if(!inword) {
+            inword = 1;
+            words++;
         }
     }
-    printf("Lineas: %d, Palabras: %d, Caracteres: %d\n", nl, nw, nc);
+    printf("%8d%8d%8d\n", lines, words, chars);
     return 0;
 }
