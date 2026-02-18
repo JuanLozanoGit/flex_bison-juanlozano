@@ -1,0 +1,5 @@
+10 + 20
+0x1A + 5
+| -50 | + 10
+# Este es un comentario
+0xF * 2
